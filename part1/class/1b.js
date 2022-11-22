@@ -101,3 +101,63 @@ const average = function(a, b) {
 }
 const result4 = average(2, 5);
 console.log(result4);
+
+// Object methods and "this"
+const jack = {
+    name: 'Jack Harlow',
+    age: 24,
+    education: 'High School',
+    greet: function() {
+        console.log('Hello, my name is ' + this.name);
+    },
+}
+jack.greet();
+
+// Assigning methods to objects after its creation
+jack.growOlder = function() {
+    this.age += 1;
+};
+console.log(jack.age);
+jack.growOlder();
+console.log(jack.age);
+
+const arto = {
+    doAddition: function(a, b) {
+        console.log(a + b);
+    }
+}
+
+arto.doAddition(1, 4); // 5 is printed
+// Referencing a function only need the name, can't take the parameters in fact.
+const referenceToAddition = arto.doAddition
+referenceToAddition(10, 20); // 30 is printed
+
+// The 'this' problem
+jack.greet(); // prints 'Hello, my name is Jack Harlow'
+// Loses knownledge of what the original this was when calling through a reference because this becomes a global object.
+// The value of this is defined based on how the method is called.
+const referenceToGreet = jack.greet;
+referenceToGreet(); // prints 'Hello, my name is undefined'
+// Another example of this is when setTimeout is used because the JavaScript enggine is calling the method and this refers to the global object.
+setTimeout(jack.greet, 1000);
+// One way to preserve the value of 'this' is using a method called bind.
+// jack.greet.bind(jack) creates a new function where 'this' is bound to the point of jack, independent of where and hwo the method is being called.
+setTimeout(jack.greet.bind(jack), 1000);
+// Arrow function could resolve some problem of 'this' but using it as methods for objects is not advised because then 'this' will not work at all.
+
+// Classes (JavaScipt simulation)
+// Still based on JavaScript's prototypal inheritance, is type Object.
+class Person {
+    constructor(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+    greet() {
+        console.log('Hello, my name is ' + this.name);
+    }
+}
+
+const kyle = new Person('Kyle', 29);
+kyle.greet();
+const ashley = new Person('Ashley', 32);
+ashley.greet();
