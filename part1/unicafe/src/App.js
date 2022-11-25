@@ -4,9 +4,11 @@ const Button = ({ text, handleClick }) => (
   <button onClick={handleClick}>{text}</button>
 )
 
-const Display = ({ score }) => {
+const Statistics = ({ score }) => {
   const [good, neutral, bad] = score
   const total_vote = good + neutral + bad
+  const average = (good - bad) / total_vote
+  const positive_percentage = good / total_vote * 100 + ' %'
 
   return (
     <>
@@ -15,8 +17,13 @@ const Display = ({ score }) => {
       <p>Neutral: {neutral}</p>
       <p>Bad: {bad}</p>
       <p>Total Votes: {total_vote}</p> 
-      <p>Average: {(good - bad) / total_vote}</p>
-      <p>Positive Percentage: {total_vote!=0?good / total_vote * 100 + ' %':'No vote yet'}</p>
+      <p>Average: {average}</p>
+      <p>Positive Percentage: {
+          total_vote!==0 ?
+          positive_percentage :
+          'No vote yet'
+        }
+      </p>
     </>
   )
 }
@@ -58,7 +65,7 @@ const App = () => {
     <div>
       <h1>Unicafe</h1>
       <Feedback handleClick={[incrementGood, incrementNeutral, incrementBad]} />
-      <Display score={[good, neutral, bad]} />
+      <Statistics score={[good, neutral, bad]} />
     </div>
   )
 }
