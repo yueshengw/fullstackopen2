@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
-import App from './App (1c)'
+import App from './App (1d)'
 
 // let counter = 1
 
