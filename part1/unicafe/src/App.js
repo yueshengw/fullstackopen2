@@ -5,35 +5,53 @@ const Button = ({ text, handleClick }) => (
 )
 
 const StatisticLine = ({ text, value }) => (
-  <p>{text}: {value}</p>
+  <tr>
+    <td>
+      {text}
+    </td>
+    <td>
+      {value}
+    </td>
+  </tr>
 )
 
-const Statistics = ({ score }) => {
-  const [good, neutral, bad] = score
+const StatisticsTableBody = ({ values }) => {
+  const [good, neutral, bad, total_vote, average, positive_percentage] = values
+  return (
+    <tbody>
+      <StatisticLine text='Good' value={good} />
+      <StatisticLine text='Neutral' value={neutral}/>
+      <StatisticLine text='Bad' value={bad} />
+      <StatisticLine text='Total Votes' value={total_vote} />
+      <StatisticLine text='Average' value={average} />
+      <StatisticLine text='Positive Percentage' value={positive_percentage} />
+    </tbody>
+  )
+}
+
+const Statistics = ({ scores }) => {
+  const [good, neutral, bad] = scores
   const total_vote = good + neutral + bad
   const average = (good - bad) / total_vote
   const positive_percentage = good / total_vote * 100 + ' %'
+
+  const values = [good, neutral, bad, total_vote, average, positive_percentage]
 
   return (
     <>
       <h2>Statistics</h2>
       {total_vote!==0 ?
-        <div>
-          <StatisticLine text='Good' value={good} />
-          <StatisticLine text='Neutral' value={neutral} />
-          <StatisticLine text='Bad' value={bad} />
-          <StatisticLine text='Total Votes' value={total_vote} />
-          <StatisticLine text='Average' value={average} />
-          <StatisticLine text='Positive Percentage' value={positive_percentage} />
-        </div> :
+        <table>
+          <StatisticsTableBody values={values}/>
+        </table> :
         <div>{'No feedback given'}</div>
       }
     </>
   )
 }
 
-const Feedback = ({ handleClick }) => {
-  const [incrementGood, incrementNeutral, incrementBad] = handleClick;
+const Feedback = ({ handleClicks }) => {
+  const [incrementGood, incrementNeutral, incrementBad] = handleClicks
 
   return (
     <>
@@ -65,12 +83,15 @@ const App = () => {
     setBad(bad + 1)
   }
 
+  const handleClicks = [incrementGood, incrementNeutral, incrementBad]
+  const scores = [good, neutral, bad]
+  
   return (
-    <div>
+    <>
       <h1>Unicafe</h1>
-      <Feedback handleClick={[incrementGood, incrementNeutral, incrementBad]} />
-      <Statistics score={[good, neutral, bad]} />
-    </div>
+      <Feedback handleClicks={handleClicks} />
+      <Statistics scores={scores} />
+    </>
   )
 }
 
