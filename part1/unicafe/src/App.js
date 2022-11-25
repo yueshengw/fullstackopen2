@@ -13,17 +13,17 @@ const Statistics = ({ score }) => {
   return (
     <>
       <h2>Statistics</h2>
-      <p>Good: {good}</p>
-      <p>Neutral: {neutral}</p>
-      <p>Bad: {bad}</p>
-      <p>Total Votes: {total_vote}</p> 
-      <p>Average: {average}</p>
-      <p>Positive Percentage: {
-          total_vote!==0 ?
-          positive_percentage :
-          'No vote yet'
-        }
-      </p>
+      {total_vote!==0 ?
+        <div>
+          <p>Good: {good}</p>
+          <p>Neutral: {neutral}</p>
+          <p>Bad: {bad}</p>
+          <p>Total Votes: {total_vote}</p> 
+          <p>Average: {average}</p>
+          <p>Positive Percentage:{positive_percentage}</p>
+        </div> :
+        <div>{'No feedback given'}</div>
+      }
     </>
   )
 }
