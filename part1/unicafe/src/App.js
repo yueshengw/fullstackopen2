@@ -5,14 +5,18 @@ const Button = ({ text, handleClick }) => (
 )
 
 const Display = ({ score }) => {
-  const [good, neutral, bad] = score;
+  const [good, neutral, bad] = score
+  const total_vote = good + neutral + bad
 
   return (
     <>
       <h2>Statistics</h2>
-      <p>Good {good}</p>
-      <p>Neutral {neutral}</p>
-      <p>Bad {bad}</p>
+      <p>Good: {good}</p>
+      <p>Neutral: {neutral}</p>
+      <p>Bad: {bad}</p>
+      <p>Total Votes: {total_vote}</p> 
+      <p>Average: {(good - bad) / total_vote}</p>
+      <p>Positive Percentage: {total_vote!=0?good / total_vote * 100 + ' %':'No vote yet'}</p>
     </>
   )
 }
