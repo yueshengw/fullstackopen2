@@ -1,5 +1,11 @@
 import { useState } from 'react'
 
+const Button = ({ handleClick, text }) => {
+    return (
+        <button onClick={handleClick}>{text}</button>
+    )
+}
+
 const App = () => {
     const anecdotes = [
         'If it hurts, do it more often.',
@@ -12,20 +18,29 @@ const App = () => {
     ]
 
     const [selected, setSelected] = useState(0)
+    const [points, setPoints] = useState(Array(anecdotes.length).fill(0))
 
-    const handleClick = (existing) => {
+    const generateRandom = (index) => {
         let randomNum = Math.floor(anecdotes.length * Math.random())
         // Prevent displaying the same anecdote
-        while (randomNum === existing) {
+        while (randomNum === index) {
             randomNum = Math.floor(anecdotes.length * Math.random())
         }
         setSelected(randomNum)
     }
 
+    const vote = (index) => {
+        const copyPoints = [...points]
+        copyPoints[index] += 1
+        setPoints(copyPoints)
+    }
+
     return (
         <div>
             <div>{anecdotes[selected]}</div><br/>
-            <button onClick={handleClick}>Next Anecdote</button>
+            <div>Has {points[selected]} votes</div>
+            <Button handleClick={() => vote(selected)} text='Vote' />
+            <Button handleClick={generateRandom} text='Next Anecdote' />
         </div>
     )
 }
