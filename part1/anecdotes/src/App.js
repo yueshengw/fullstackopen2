@@ -5,6 +5,29 @@ const Button = ({ handleClick, text }) => {
         <button onClick={handleClick}>{text}</button>
     )
 }
+const AnecdoteWithMostVotesDisplay = ({anecdotes, points}) => {
+    const max = Math.max(...points)
+    const indexOfMax = [...points].indexOf(max);
+    return (
+        <div>
+            <h2>Anecdote With Most Votes</h2>
+            <div>{anecdotes[indexOfMax]}</div>
+            <div>Has {max} {max > 0 ? 'votes': 'vote'}</div>
+        </div>
+    )
+}
+
+const AnecdoteOfTheDayDisplay = ({ selected, anecdotes, points, vote, generateRandom}) => {
+    return (
+    <div>
+        <h2>Anecdote of The Day</h2>
+        <div>{anecdotes[selected]}</div><br/>
+        <div>Has {points[selected]} {points[selected] > 0 ? 'votes': 'vote'}</div>
+        <Button handleClick={() => vote(selected)} text='Vote' />
+        <Button handleClick={generateRandom} text='Next Anecdote' />
+    </div>
+    )
+}
 
 const App = () => {
     const anecdotes = [
@@ -36,11 +59,19 @@ const App = () => {
     }
 
     return (
+        
         <div>
-            <div>{anecdotes[selected]}</div><br/>
-            <div>Has {points[selected]} votes</div>
-            <Button handleClick={() => vote(selected)} text='Vote' />
-            <Button handleClick={generateRandom} text='Next Anecdote' />
+            <AnecdoteOfTheDayDisplay 
+                selected={selected} 
+                anecdotes={anecdotes} 
+                points={points}
+                vote={vote}
+                generateRandom={generateRandom}
+            />
+            <AnecdoteWithMostVotesDisplay 
+                anecdotes={anecdotes}
+                points={points}
+            />
         </div>
     )
 }
