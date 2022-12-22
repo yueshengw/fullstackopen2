@@ -1,0 +1,13 @@
+title New Note in SPA Diagram
+
+note over browser:
+js-code creates a new note with input text and renders it.
+end note
+
+browser->server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+
+note over server:
+add note to database
+end note
+
+server-->browser: 201 Confirming Creation
