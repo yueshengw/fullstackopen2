@@ -1,7 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import axios from 'axios'
 
 import App from './App (2b)'
+
+const baseURL = 'https://yueshengw-studious-fiesta-x7455pvvpr7h9p4w-3001.preview.app.github.dev/'
+const promise1 = axios.get(baseURL+'notes')
+console.log(promise1)
+const promise2 = axios.get(baseURL+"foobar")
+console.log(promise2)
 
 const notes = [
     {
