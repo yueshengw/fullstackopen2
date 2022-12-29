@@ -1,50 +1,9 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
 import personService from './services/persons'
-
-const Filter = ({ value, inputHandler }) => {
-    return (
-        <div>Filter shown with: <input value={value} onChange={inputHandler} /></div>
-    )
-}
-
-const Person = ({ person, handleDelete }) => (
-    <>
-        <div key={person.id}>{person.name} {person.number}</div> <button onClick={() => handleDelete(person)}>delete</button>
-    </>
-)
-
-const Persons = ({ persons, filterInput, handleDelete }) => {
-
-    return (
-        persons.map(
-            (person) => person.name.toLowerCase().includes(filterInput) && 
-            <Person
-                key={person.name}
-                person={person}
-                handleDelete={handleDelete}
-            />
-        )
-    )
-}
-
-const PersonForm = ({ formValues, formHandlers }) => {
-    return (
-        <>
-            <form onSubmit={formHandlers.addPerson}>
-            <div>
-                Name: <input required value={formValues.newName} onChange={formHandlers.handleNameChange} />
-            </div>
-            <div>
-                Number: <input required value={formValues.newNumber} onChange={formHandlers.handleNumberChange} />
-            </div>
-            <div>
-                <button type="submit">Add</button>
-            </div>
-            </form>
-        </>
-    )
-}
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
 
 const App = () => {
     const [persons, setPersons] = useState([])
@@ -97,11 +56,19 @@ const App = () => {
     }
 
     const validate = (name) => {
-        return persons.every((person) => person.name !== name)
+        personService
+            .getAll()
+            .then(personArray => {
+                return personArray.every((person) => person.name !== name)
+            })
+            .catch(error => {
+                console.log(error)
+            })
     }
     
     const addPerson = (event) => {
         event.preventDefault()
+        
         if (validate(newName)) {
             const newPerson = {
                 'name': newName,
@@ -121,7 +88,29 @@ const App = () => {
             setNewNumber('')
         }
         else {
-            alert(`${newName} is already added to Phonebook`)
+            const personObject = persons.find(person => person.name === newName)
+            const { id } = personObject
+
+            if (personObject !== undefined && 
+                window.confirm(`${newName} is already added to Phonebook, replace the old number with the new one?`)) {
+                const updatedPersonObject = { ...personObject, number: newNumber}
+                personService
+                    .updatePerson(updatedPersonObject)
+                    .then(response => {
+                        setPersons(persons.map(person => {
+                                return person.id !== id ?
+                                person :
+                                updatedPersonObject
+                                }
+                            )
+                        )
+                        setNewName('')
+                        setNewNumber('')
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            }
         }
     }
 
