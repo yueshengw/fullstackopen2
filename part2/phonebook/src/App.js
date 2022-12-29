@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 
 const Filter = ({ value, inputHandler }) => {
     return (
@@ -8,11 +8,22 @@ const Filter = ({ value, inputHandler }) => {
     )
 }
 
-const Persons = ({ persons, filterInput }) => {
+const Person = ({ person, handleDelete }) => (
+    <>
+        <div key={person.id}>{person.name} {person.number}</div> <button onClick={() => handleDelete(person)}>delete</button>
+    </>
+)
+
+const Persons = ({ persons, filterInput, handleDelete }) => {
+
     return (
         persons.map(
             (person) => person.name.toLowerCase().includes(filterInput) && 
-            <div key={person.id}>{person.name} {person.number}</div>
+            <Person
+                key={person.name}
+                person={person}
+                handleDelete={handleDelete}
+            />
         )
     )
 }
@@ -42,10 +53,10 @@ const App = () => {
     const [filterInput, setFilterInput] = useState('')
 
     useEffect(() => {
-        axios
-            .get('http://localhost:3001/persons')
-            .then(response => {
-                setPersons(response.data)
+        personService
+            .getAll()
+            .then(initArray => {
+                setPersons(initArray)
             })
     }, [])
 
@@ -61,6 +72,30 @@ const App = () => {
         setNewName(event.target.value)
     }
 
+    const handleDelete = (person) => {
+        const { id, name } = person
+        if (window.confirm(`Delete ${name}?`)) {
+            personService
+            .deletePerson(id)
+                .then(response => 
+                    setPersons(persons.filter(person => person.id !== id))
+                )
+                .catch(error => {
+                    personService
+                        .getAll()
+                        .then(personArray => {
+                            if (personArray.find(person => person.id === id) === undefined) {
+                                alert(`The person '${name}' was already deleted`)
+                            }
+                            else {
+                                console.log(error)
+                            }
+                        })
+                        .catch(error => console.log(error))
+                })
+        }
+    }
+
     const validate = (name) => {
         return persons.every((person) => person.name !== name)
     }
@@ -73,9 +108,15 @@ const App = () => {
                 'number': newNumber,
                 'id': persons.length + 1
             }
-            setPersons(persons.concat([
-                newPerson
-            ]))
+
+            personService
+                .addPerson(newPerson)
+                .then(personObject => {
+                    setPersons(persons.concat([
+                        personObject
+                    ]))
+                })
+
             setNewName('')
             setNewNumber('')
         }
@@ -83,8 +124,10 @@ const App = () => {
             alert(`${newName} is already added to Phonebook`)
         }
     }
-    const formValues = [newName, newNumber]
-    const formHandlers = [handleNameChange, handleNumberChange, addPerson]
+
+    const formValues = { newName, newNumber }
+    const formHandlers = { handleNameChange, handleNumberChange, addPerson }
+    
     return (
         <div>
             <h1>Phonebook</h1>
@@ -101,6 +144,7 @@ const App = () => {
             <Persons
                 persons={persons}
                 filterInput={filterInput} 
+                handleDelete={handleDelete}
             />
         </div>
     )
