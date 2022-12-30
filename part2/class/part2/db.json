@@ -21,13 +21,13 @@
       "id": 1,
       "content": "HTML is easy",
       "date": "2022-1-17T17:30:31.098Z",
-      "important": true
+      "important": false
     },
     {
       "id": 2,
       "content": "Browser can execute only JavaScript",
       "date": "2022-1-17T18:39:34.091Z",
-      "important": false
+      "important": true
     },
     {
       "id": 3,
@@ -44,13 +44,13 @@
     {
       "content": "cyberpunk",
       "date": "2022-12-28T18:08:15.046Z",
-      "important": false,
+      "important": true,
       "id": 5
     },
     {
       "content": "hello 1",
       "date": "2022-12-28T18:08:20.115Z",
-      "important": false,
+      "important": true,
       "id": 6
     },
     {
@@ -98,13 +98,13 @@
     {
       "content": "test",
       "date": "2022-12-28T18:31:53.548Z",
-      "important": true,
+      "important": false,
       "id": 14
     },
     {
       "content": "test",
       "date": "2022-12-29T15:52:35.287Z",
-      "important": true,
+      "important": false,
       "id": 15
     }
   ]

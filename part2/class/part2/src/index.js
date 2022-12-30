@@ -2,7 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import axios from 'axios'
 
-import App from './App (2d)'
+import App from './App (2e)'
+import './index.css'
 
 const baseURL = 'http://localhost:3001/'
 
