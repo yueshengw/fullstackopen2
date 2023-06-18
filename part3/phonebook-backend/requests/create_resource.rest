@@ -1,0 +1,31 @@
+GET http://localhost:3001/api/notes
+
+### send id to show the client can't set it
+POST http://localhost:3001/api/persons HTTP/1.1
+content-type: application/json
+
+{
+    "id": 1,
+    "name": "james",
+    "number": "505-503-4455"
+}
+
+### invalid entry 1
+POST http://localhost:3001/api/persons HTTP/1.1
+content-type: application/json
+
+{
+    "id": 1,
+    "name": "",
+    "number": ""
+}
+
+### invalid entry 2
+POST http://localhost:3001/api/persons HTTP/1.1
+content-type: application/json
+
+{
+    "id": 1,
+    "name": "nat",
+    "number": ""
+}
