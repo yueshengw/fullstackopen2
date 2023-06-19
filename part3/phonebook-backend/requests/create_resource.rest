@@ -1,5 +1,14 @@
 GET http://localhost:3001/api/notes
 
+###
+POST http://localhost:3001/api/persons HTTP/1.1
+content-type: application/json
+
+{
+    "name": "james",
+    "number": "505-503-4455"
+}
+
 ### send id to show the client can't set it
 POST http://localhost:3001/api/persons HTTP/1.1
 content-type: application/json
