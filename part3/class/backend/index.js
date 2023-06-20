@@ -1,11 +1,14 @@
 const express = require("express")
+const cors = require("cors")
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 // why this work. magic duh XD
 // function declaration are processed before code block is executed
 // function expression/arrow function will not work though
 app.use(requestLogger)
+app.use(express.static('build'))
 
 function requestLogger(request, response, next) {
     console.log("Method:", request.method)
@@ -114,6 +117,7 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint)
 
-const PORT = 3001
-app.listen(PORT)
-console.log(`Server runing on port ${PORT}`)
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
+    console.log(`Server runing on port ${PORT}`)
+})

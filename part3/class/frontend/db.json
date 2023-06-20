@@ -1,0 +1,111 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "json-server",
+      "author": "typicode"
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  },
+  "notes": [
+    {
+      "id": 1,
+      "content": "HTML is easy",
+      "date": "2022-1-17T17:30:31.098Z",
+      "important": false
+    },
+    {
+      "id": 2,
+      "content": "Browser can execute only JavaScript",
+      "date": "2022-1-17T18:39:34.091Z",
+      "important": true
+    },
+    {
+      "id": 3,
+      "content": "GET and POST are the most important methods of HTTP protocol",
+      "date": "2022-1-17T19:20:14.298Z",
+      "important": true
+    },
+    {
+      "content": "test test",
+      "date": "2022-12-28T18:08:09.011Z",
+      "important": true,
+      "id": 4
+    },
+    {
+      "content": "cyberpunk",
+      "date": "2022-12-28T18:08:15.046Z",
+      "important": true,
+      "id": 5
+    },
+    {
+      "content": "hello 1",
+      "date": "2022-12-28T18:08:20.115Z",
+      "important": true,
+      "id": 6
+    },
+    {
+      "content": "hello 2",
+      "date": "2022-12-28T18:08:31.989Z",
+      "important": false,
+      "id": 7
+    },
+    {
+      "content": "elmo",
+      "date": "2022-12-28T18:11:58.322Z",
+      "important": false,
+      "id": 8
+    },
+    {
+      "content": "1738",
+      "date": "2022-12-28T18:12:02.876Z",
+      "important": true,
+      "id": 9
+    },
+    {
+      "content": "999",
+      "date": "2022-12-28T18:12:22.678Z",
+      "important": false,
+      "id": 10
+    },
+    {
+      "content": "aaa",
+      "date": "2022-12-28T18:13:49.386Z",
+      "important": true,
+      "id": 11
+    },
+    {
+      "content": "bbb",
+      "date": "2022-12-28T18:14:01.813Z",
+      "important": false,
+      "id": 12
+    },
+    {
+      "content": "test",
+      "date": "2022-12-28T18:30:43.087Z",
+      "important": true,
+      "id": 13
+    },
+    {
+      "content": "test",
+      "date": "2022-12-28T18:31:53.548Z",
+      "important": false,
+      "id": 14
+    },
+    {
+      "content": "test",
+      "date": "2022-12-29T15:52:35.287Z",
+      "important": false,
+      "id": 15
+    }
+  ]
+}
