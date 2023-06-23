@@ -24,7 +24,7 @@ const noteSchema = new mongoose.Schema({
     important: Boolean,
 });
 
-const Note = mongoose.model("apples", noteSchema);
+const Note = mongoose.model("Note", noteSchema);
 
 // const note = new Note({
 //     content: "HTML is easy",
@@ -50,4 +50,5 @@ Note.find({ important: false }).then(result => {
     console.log("fetch failed");
     console.log(error);
     mongoose.connection.close();
+    process.exit(1);
 });
