@@ -1,6 +1,8 @@
+require("dotenv").config()
 const express = require("express")
 const cors = require("cors")
 const app = express()
+const Note = require("./models/note")
 
 app.use(cors())
 app.use(express.json())
@@ -18,30 +20,56 @@ function requestLogger(request, response, next) {
     next()
 }
 
-let notes = [
-    {
-        id: 1,
-        content: "HTML is easy",
-        important: true
-    },
-    {
-        id: 2,
-        content: "Browser can execute only JavaScript",
-        important: false
-    },
-    {
-        id: 3,
-        content: "GET and POST are the most important methods of HTTP protocol",
-        important: true
-    }
-]
+// Mongoose definitions
+// mongoose.set("strictQuery", false);
+// const url = `mongodb+srv://user1:${process.env.USER1PASSWORD}@p3classbackend.5shiohc.mongodb.net/noteApp?retryWrites=true&w=majority`;
+
+// mongoose.connect(url).catch(error => {
+//     console.log("connection failed");
+//     process.exit(1);
+// });
+
+// const noteSchema = new mongoose.Schema({
+//     content: String,
+//     important: Boolean,
+// });
+
+// noteSchema.set("toJSON", {
+//     transform: (document, returnedObject) => {
+//         returnedObject.id = returnedObject._id.toString()
+//         delete returnedObject._id
+//         delete returnedObject.__v
+//     }
+// })
+
+// const Note = mongoose.model("Note", noteSchema);
+
+// let notes = [
+//     {
+//         id: 1,
+//         content: "HTML is easy",
+//         important: true
+//     },
+//     {
+//         id: 2,
+//         content: "Browser can execute only JavaScript",
+//         important: false
+//     },
+//     {
+//         id: 3,
+//         content: "GET and POST are the most important methods of HTTP protocol",
+//         important: true
+//     }
+// ]
 
 app.get("/", (request, response) => {
     response.send('<h1>Hello World!</h1>')
 })
 
 app.get("/api/notes", (request, response) => {
-    response.json(notes)
+    Note.find({}).then(notes => {
+        response.json(notes)
+    })
 })
 
 app.get("/api/notes/:id", (request, response) => {
@@ -50,15 +78,19 @@ app.get("/api/notes/:id", (request, response) => {
     //     console.log(note.id, typeof note.id, id, typeof id, note.id === id)
     //     return note.id === id
     // })
-    const note = notes.find(note => note.id.toString() === id)
+    // const note = notes.find(note => note.id.toString() === id)
     // console.log(note)
-    if (note) {
+
+    // if (note) {
+    //     response.json(note)
+    // }
+    // else {
+    //     response.statusMessage = "id not found in the notes collection"
+    //     response.status(404).end()
+    // }
+    Note.findById(id).then(note => {
         response.json(note)
-    }
-    else {
-        response.statusMessage = "id not found in the notes collection"
-        response.status(404).end()
-    }
+    })
 })
 
 app.delete("/api/notes/:id", (request, response) => {
@@ -101,14 +133,16 @@ app.post("/api/notes", (request, response) => {
         })
     }
 
-    const note = {
+    const note = new Note({
         content: body.content,
         important: body.important || false,
-        id: generateId(),
-    }
-    notes = notes.concat(note)
+        // id: generateId(),
+    })
+    // notes = notes.concat(note)
 
-    response.json(note)
+    note.save().then(savedNote => {
+        response.json(savedNote)
+    })
 })
 
 const unknownEndpoint = (request, response) => {
