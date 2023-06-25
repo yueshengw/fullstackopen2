@@ -1,6 +1,8 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const Person = require("./models/person");
 
 const app = express();
 app.use(express.json());
@@ -12,35 +14,43 @@ morgan.token('body', function (req, res) {
 });
 app.use(morgan(":method :url :status :res[content-length] - :response-time ms :body"));
 
-let persons = [
-    { 
-      "id": 1,
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": 2,
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": 3,
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": 4,
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-];
+// let persons = [
+//     { 
+//       "id": 1,
+//       "name": "Arto Hellas", 
+//       "number": "040-123456"
+//     },
+//     { 
+//       "id": 2,
+//       "name": "Ada Lovelace", 
+//       "number": "39-44-5323523"
+//     },
+//     { 
+//       "id": 3,
+//       "name": "Dan Abramov", 
+//       "number": "12-43-234345"
+//     },
+//     { 
+//       "id": 4,
+//       "name": "Mary Poppendieck", 
+//       "number": "39-23-6423122"
+//     }
+// ];
 
 app.get("/api/persons", (req, res) => {
-    res.json(persons);
+	Person.find({})
+		.then(persons => {
+			res.json(persons);
+		})
+		.catch(error => {
+			console.log("fetch failed");
+			console.log(error.message);
+            res.status(404).end();
+		});
 });
 
 app.get("/info", (req, res) => {
-    const appInfo = `Phonebook has info for ${persons.length} people`;
+    //const appInfo = `Phonebook has info for ${persons.length} people`;
     const timeInfo = new Date();
     console.log(timeInfo);
     res.send(`<p>${appInfo}</p><p>${timeInfo}</p>`);
@@ -67,8 +77,9 @@ app.delete("/api/persons/:id", (req, res) => {
 });
 
 const nameValidation = name => {
-  // name needs to be truthy and unique to be true
-  return name && persons.every(person => person.name !== name);
+    // name needs to be truthy and unique to be true
+    // return name && persons.every(person => person.name !== name);
+    return Boolean(name);
 };
 
 const numberValidation = number => {
@@ -87,16 +98,26 @@ const generateValidId = () => {
 };
 
 app.post("/api/persons/", (req, res) => {
-  const id = generateValidId();
+  // const id = generateValidId();
   const body = req.body;
   if (nameValidation(body.name) && nameValidation(body.number)) {
-    const person = {
-      "id": id,
+    const person = new Person({
+      // "id": id,
       "name": body.name || "None",
       "number": body.number || "None"
-    };
-    persons = persons.concat(person);
-    res.json(person);
+    });
+    // persons = persons.concat(person);
+    
+    person.save()
+        .then(savedPerson => {
+            res.json(savedPerson);
+        })
+        .catch(error => {
+            console.log("saving failed");
+            console.log(error.message);
+            res.status(404).end();
+        })
+    
   }
   else {
     res.status(404).json({
