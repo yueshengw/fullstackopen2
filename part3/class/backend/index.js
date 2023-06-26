@@ -5,12 +5,12 @@ const app = express()
 const Note = require("./models/note")
 
 app.use(cors())
+app.use(express.static('build'))
 app.use(express.json())
 // why this work. magic duh XD
 // function declaration are processed before code block is executed
 // function expression/arrow function will not work though
 app.use(requestLogger)
-app.use(express.static('build'))
 
 function requestLogger(request, response, next) {
     console.log("Method:", request.method)
@@ -72,7 +72,7 @@ app.get("/api/notes", (request, response) => {
     })
 })
 
-app.get("/api/notes/:id", (request, response) => {
+app.get("/api/notes/:id", (request, response, next) => {
     const id = request.params.id // can use Number() but can't guarantee id can evaluate to a number and might result in NaN
     // const note = notes.find(note => {
     //     console.log(note.id, typeof note.id, id, typeof id, note.id === id)
@@ -89,15 +89,29 @@ app.get("/api/notes/:id", (request, response) => {
     //     response.status(404).end()
     // }
     Note.findById(id).then(note => {
-        response.json(note)
+        if (note) {
+            response.json(note)
+        }
+        else {
+            response.status(404).end()
+        }
     })
+    // .catch(error => {
+    //     console.log(error)
+    //     response.status(400).send({ error: "malformatted id"})
+    //     // fits description: "The request could not be understood by the server due to malformed syntax. The client SHOULD NOT repeat the request without modifications."
+    // })
+    .catch(error => next(error))
 })
 
-app.delete("/api/notes/:id", (request, response) => {
+app.delete("/api/notes/:id", (request, response, next) => {
     const id = request.params.id
-    notes = notes.filter(note => note.id.toString() !== id)
-
-    response.status(204).end()
+    // notes = notes.filter(note => note.id.toString() !== id)
+    Note.findByIdAndRemove(id)
+        .then(result => {
+            response.status(204).end()
+        })
+        .catch(error => next(error))
 })
 
 // app.post("/api/notes", (request, response) => {
@@ -145,11 +159,43 @@ app.post("/api/notes", (request, response) => {
     })
 })
 
+app.put("/api/notes/:id", (request, response, next) => {
+    const body = request.body
+
+    const note = {
+        content: body.content,
+        important: body.important || false,
+    }
+
+    Note.findByIdAndUpdate(request.params.id, note, { new: true })
+        .then(updatedNote => {
+            response.json(updatedNote)
+        }) // without the { new: true } argument, updatedNote will be the original document/note instead of the modified.
+        .catch(error => next(error))
+})
+
 const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: "unknown endpoint"})
 }
 
 app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+    // console.log(error)
+    // console.log("---")
+    // console.log(error.name)
+    // console.log("---")
+    console.log(error.message)
+
+    if (error.name === "CastError") {
+        return response.status(400).send({ error: 'malformatted id' })
+    }
+
+    next(error) // Express has a default error handler
+}
+
+// this has to be the last loaded middleware
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {

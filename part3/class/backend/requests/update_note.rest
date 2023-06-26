@@ -1,0 +1,41 @@
+### Create a new note and get its id from response
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+
+{
+    "content": "test note",
+    "important": true
+}
+
+### before/after change
+GET http://localhost:3001/api/notes/64a44242f16ca60181863ea1
+
+### update note (content)
+PUT http://localhost:3001/api/notes/64a44242f16ca60181863ea1
+Content-Type: application/json
+
+{
+    "content": "test note (1)",
+    "important": true
+}
+
+### update note (importance)
+PUT http://localhost:3001/api/notes/64a44242f16ca60181863ea1
+Content-Type: application/json
+
+{
+    "content": "test note",
+    "important": false
+}
+
+### update note (both)
+PUT http://localhost:3001/api/notes/64a44242f16ca60181863ea1
+Content-Type: application/json
+
+{
+    "content": "same id, different content/importance",
+    "important": false
+}
+
+### put note with malformatted id
+PUT http://localhost:3001/api/notes/1
