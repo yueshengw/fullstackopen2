@@ -50,36 +50,65 @@ app.get("/api/persons", (req, res) => {
 });
 
 app.get("/info", (req, res) => {
-    //const appInfo = `Phonebook has info for ${persons.length} people`;
-    const timeInfo = new Date();
-    console.log(timeInfo);
-    res.send(`<p>${appInfo}</p><p>${timeInfo}</p>`);
+    Person.find({})
+        .then(persons => {
+            const appInfo = `Phonebook has info for ${persons.length} people`;
+            const timeInfo = new Date();
+            console.log(timeInfo);
+            res.send(`<p>${appInfo}</p><p>${timeInfo}</p>`);
+        })
+        .catch(error => {
+            res.status(404).end();
+        });
 });
 
-app.get("/api/persons/:id", (req, res) => {
-  const id = req.params.id;
-  const person = persons.find(person => person.id.toString() === id);
-
-  if (person) {
-    res.send(person);
-  }
-  else {
-    res.statusMessage = "no such id in database";
-    res.status(404).end();
-  }
+app.get("/api/persons/:id", (req, res, next) => {
+    const id = req.params.id;
+//   const person = persons.find(person => person.id.toString() === id);
+    Person.findById(id)
+        .then(result => {
+            if (result) {
+                res.send(result);
+            }
+            else {
+                res.statusMessage = "no such id in database";
+                res.status(404).end();
+            }
+        })
+        .catch(error => {
+            next(error);
+        })
 });
 
-app.delete("/api/persons/:id", (req, res) => {
-  const id = req.params.id;
-  persons = persons.filter(person => person.id.toString() !== id);
+// app.delete("/api/persons/:id", (req, res) => {
+//   const id = req.params.id;
+//   persons = persons.filter(person => person.id.toString() !== id);
 
-  res.status(204).end();
-});
+//   res.status(204).end();
+// });
 
 const nameValidation = name => {
+    return new Promise((resolve, reject) => {
     // name needs to be truthy and unique to be true
     // return name && persons.every(person => person.name !== name);
-    return Boolean(name);
+    if (Boolean(name) === false) {
+        resolve(false);
+    }
+
+    Person.find({})
+        .then(result => {
+            // console.log(result);
+            console.log(result.every(person => {
+                return person.name.toLocaleLowerCase() !== name.toLocaleLowerCase()
+            }));
+            resolve(result.every(person => {
+                return person.name.toLocaleLowerCase() !== name.toLocaleLowerCase()
+            }));
+        })
+        .catch(error => {
+            resolve(false);
+        })
+    });
 };
 
 const numberValidation = number => {
@@ -100,39 +129,89 @@ const generateValidId = () => {
 app.post("/api/persons/", (req, res) => {
   // const id = generateValidId();
   const body = req.body;
-  if (nameValidation(body.name) && nameValidation(body.number)) {
-    const person = new Person({
-      // "id": id,
-      "name": body.name || "None",
-      "number": body.number || "None"
-    });
-    // persons = persons.concat(person);
-    
-    person.save()
-        .then(savedPerson => {
-            res.json(savedPerson);
+  nameValidation(body.name).then(
+    result => {
+        if (result && numberValidation(body.number)) {
+            const person = new Person({
+              // "id": id,
+              "name": body.name || "None",
+              "number": body.number || "None"
+            });
+            // persons = persons.concat(person);
+            
+            person.save()
+                .then(savedPerson => {
+                    res.json(savedPerson);
+                })
+                .catch(error => {
+                    console.log("saving failed");
+                    console.log(error.message);
+                    res.status(404).end();
+                })
+            
+          }
+          else {
+            res.status(404).json({
+              "error": body.number === 0
+              ? "number is missing"
+              // // // // // // // //
+              : body.name.length > 1 
+              ? "name must be unique"
+              : "name is missing"
+            });
+          }
+    }
+  );
+});
+
+app.put("/api/persons/:id", (req, res, next) => {
+    const id = req.params.id;
+    const body = req.body;
+
+    const person = {
+        name: body.name,
+        number: body.number
+    }
+
+    Person.findByIdAndUpdate(id, person, { new: true })
+        .then(updatedPerson => {
+            res.json(updatedPerson);
         })
         .catch(error => {
-            console.log("saving failed");
-            console.log(error.message);
-            res.status(404).end();
-        })
-    
-  }
-  else {
-    res.status(404).json({
-      "error": body.number === 0
-      ? "number is missing"
-      // // // // // // // //
-      : body.name.length > 1 
-      ? "name must be unique"
-      : "name is missing"
-    });
-  }
+            next(error);
+        });
+})
 
+app.delete("/api/persons/:id", (req, res, next) => {
+    const id = req.params.id;
+
+    Person.findByIdAndDelete(id)
+        .then(result => {
+            res.status(204).end();
+        })
+        .catch(error => {
+            next(error);
+        });
 });
+
+app.use(unknownEndpoint);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+function unknownEndpoint(req, res) {
+    res.status(404).send({ error: "unkown endpoint"});
+}
+
+function errorHandler(error, req, res, next) {
+    console.log(error.message);
+    
+    if (error.name == "CastError") {
+        res.status(404).send({ error: "malformatted id"});
+    }
+
+    next(error);
+}

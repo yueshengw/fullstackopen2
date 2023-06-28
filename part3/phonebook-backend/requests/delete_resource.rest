@@ -1,1 +1,14 @@
-DELETE http://localhost:3001/api/persons/2
+### create new resource (use generated id for the other requests)
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+    "name": "test1",
+    "number": "1113"
+}
+
+###
+DELETE http://localhost:3001/api/persons/64a4849ee9373def1efe0437
+
+###
+GET http://localhost:3001/api/persons/64a4849ee9373def1efe0437

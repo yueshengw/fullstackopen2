@@ -9,7 +9,10 @@ const getAll = () => {
 
 const addPerson = personObject => {
     const request = axios.post(baseURL, personObject)
-    return request.then(response => response.data)
+    return request.then(response => {
+        console.log(response)
+        return response.data
+    })
 }
 
 const updatePerson = ( personObject) => {
