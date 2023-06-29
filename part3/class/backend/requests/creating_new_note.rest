@@ -14,3 +14,21 @@ Content-Type: application/json
     "content": "Ensure that everything still works",
     "important": true
 }
+
+### Check content length validation
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+
+{
+    "content": "3",
+    "important": true
+}
+
+### Check content length validation for put
+PUT http://localhost:3001/api/notes/64ab18ad0c2a88834f635b1f
+Content-Type: application/json
+
+{
+    "content": "3",
+    "important": true
+}
