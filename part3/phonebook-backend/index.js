@@ -126,54 +126,75 @@ const generateValidId = () => {
   return id;
 };
 
-app.post("/api/persons/", (req, res) => {
-  // const id = generateValidId();
-  const body = req.body;
-  nameValidation(body.name).then(
-    result => {
-        if (result && numberValidation(body.number)) {
-            const person = new Person({
-              // "id": id,
-              "name": body.name || "None",
-              "number": body.number || "None"
-            });
-            // persons = persons.concat(person);
+// app.post("/api/persons/", (req, res) => {
+//   // const id = generateValidId();
+//   const body = req.body;
+//   nameValidation(body.name).then(
+//     result => {
+//         if (result && numberValidation(body.number)) {
+//             const person = new Person({
+//               // "id": id,
+//               "name": body.name || "None",
+//               "number": body.number || "None"
+//             });
+//             // persons = persons.concat(person);
             
-            person.save()
-                .then(savedPerson => {
-                    res.json(savedPerson);
-                })
-                .catch(error => {
-                    console.log("saving failed");
-                    console.log(error.message);
-                    res.status(404).end();
-                })
+//             person.save()
+//                 .then(savedPerson => {
+//                     res.json(savedPerson);
+//                 })
+//                 .catch(error => {
+//                     console.log("saving failed");
+//                     console.log(error.message);
+//                     res.status(404).end();
+//                 })
             
-          }
-          else {
-            res.status(404).json({
-              "error": body.number === 0
-              ? "number is missing"
-              // // // // // // // //
-              : body.name.length > 1 
-              ? "name must be unique"
-              : "name is missing"
-            });
-          }
-    }
-  );
+//           }
+//           else {
+//             res.status(404).json({
+//               "error": body.number === 0
+//               ? "number is missing"
+//               // // // // // // // //
+//               : body.name.length > 1 
+//               ? "name must be unique"
+//               : "name is missing"
+//             });
+//           }
+//     }
+//   );
+// });
+
+app.post("/api/persons/", (req, res, next) => {
+    const body = req.body;
+    const person = new Person({
+        name: body.name,
+        number: body.number
+    });
+    
+    person.save()
+    .then(savedPerson => {
+        res.json(savedPerson);
+    })
+    .catch(error => {
+        console.log("saving failed");
+        console.log(error.message);
+        // res.status(404).end();
+        next(error);
+    })
 });
 
 app.put("/api/persons/:id", (req, res, next) => {
     const id = req.params.id;
-    const body = req.body;
+    // const body = req.body;
 
-    const person = {
-        name: body.name,
-        number: body.number
-    }
+    // const person = {
+    //     name: body.name,
+    //     number: body.number
+    // }
 
-    Person.findByIdAndUpdate(id, person, { new: true })
+    const { name, number } = req.body;
+
+    Person.findByIdAndUpdate(id, { name, number }, { new: true, runValidators: true, context: "query" })
         .then(updatedPerson => {
             res.json(updatedPerson);
         })
@@ -212,6 +233,8 @@ function errorHandler(error, req, res, next) {
     if (error.name == "CastError") {
         res.status(404).send({ error: "malformatted id"});
     }
-
+    else if (error.name === "ValidationError") {
+        res.status(404).json({ error: error.message })
+    }
     next(error);
 }

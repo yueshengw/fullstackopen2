@@ -6,7 +6,7 @@ content-type: application/json
 
 {
     "name": "james",
-    "number": "505-503-4455"
+    "number": "505-5034455"
 }
 
 ###
@@ -15,10 +15,10 @@ content-type: application/json
 
 {
     "name": "james",
-    "number": "505-503-4455"
+    "number": "505-5034455"
 }
 
-### invalid entry 1
+### invalid entry
 POST http://localhost:3001/api/persons HTTP/1.1
 content-type: application/json
 
@@ -28,10 +28,37 @@ content-type: application/json
 }
 
 ### invalid entry 2
-POST http://localhost:3001/api/persons HTTP/1.1
+PUT http://localhost:3001/api/persons/64ab1ed9f5f522c2dfc81074
 content-type: application/json
 
 {
-    "name": "nat",
+    "name": "j",
     "number": ""
+}
+
+### invalid entry 3
+POST http://localhost:3001/api/persons
+content-type: application/json
+
+{
+    "name": "test",
+    "number": ""
+}
+
+### invalid entry 4 (number too short)
+POST http://localhost:3001/api/persons
+content-type: application/json
+
+{
+    "name": "test",
+    "number": "12-3456"
+}
+
+### invalid entry 4 (incorrect format)
+POST http://localhost:3001/api/persons
+content-type: application/json
+
+{
+    "name": "test",
+    "number": "1234-5678"
 }

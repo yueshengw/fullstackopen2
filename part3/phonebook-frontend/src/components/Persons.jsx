@@ -6,7 +6,7 @@ const Persons = ({ persons, filterInput, handleDelete }) => {
         persons.map(
             (person) => person.name.toLowerCase().includes(filterInput) && 
             <Person
-                key={person.name}
+                key={person.id}
                 person={person}
                 handleDelete={handleDelete}
             />

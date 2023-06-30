@@ -89,7 +89,16 @@ const App = () => {
                         }, 5000)
                     })
                     .catch(error => {
-                        console.log(error)
+                        // console.log(error.response.data.error)
+                        setMessage({
+                            'text': error.response.data.error,
+                            'type': 'error'
+                        })
+                        setTimeout(() => {
+                            setTimeout(() => {
+                                setMessage({ 'text': null, 'type': null})
+                            }, 5000)
+                        }, 5000)
                     })
             }
             else if (persons.find(person => person.name === newName) !== undefined) {
@@ -120,7 +129,16 @@ const App = () => {
                             }, 5000)
                         })
                         .catch(error => {
-                            console.log(error)
+                            // console.log(error)
+                            setMessage({
+                                'text': error.response.data.error,
+                                'type': 'error'
+                            })
+                            setTimeout(() => {
+                                setTimeout(() => {
+                                    setMessage({ 'text': null, 'type': null})
+                                }, 5000)
+                            }, 5000)
                         })
                 }
             }
