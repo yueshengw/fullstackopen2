@@ -9,11 +9,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "setup": "npm install & npm --prefix ../phonebook-frontend install",
     "build:ui": "rm -rf build && npm --prefix ../phonebook-frontend run build && cp -r ../phonebook-frontend/build .",
-    "deploy:full": "npm run setup && npm run build:ui"
+    "deploy:full": "npm run setup && npm run build:ui",
+    "lint": "eslint ."
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "eslint": "^8.44.0",
     "nodemon": "^2.0.22"
   },
   "dependencies": {

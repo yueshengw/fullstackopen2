@@ -26,7 +26,6 @@ module.exports = {
 			"error",
 			"tab"
 		],
-		"no-mixed-spaces-and-tabs": ["off"],
 		"linebreak-style": [
 			"error",
 			"unix"
@@ -37,7 +36,7 @@ module.exports = {
 		],
 		"semi": [
 			"error",
-			"never"
+			"always"
 		],
 		"eqeqeq": "error",
 		"no-trailing-spaces": "error",
@@ -48,6 +47,6 @@ module.exports = {
 			"error", { "before": true, "after": true }
 		],
 		"no-console": 0,
-		"no-unused-vars": 0
+		"no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
 	}
-}
+};
