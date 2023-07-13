@@ -13,11 +13,11 @@ app.use(express.json())
 app.use(requestLogger)
 
 function requestLogger(request, response, next) {
-	console.log("Method:", request.method)
-	console.log("Path:  ", request.path)
-	console.log("Body:  ", request.body)
-	console.log("---")
-	next()
+    console.log("Method:", request.method)
+    console.log("Path:  ", request.path)
+    console.log("Body:  ", request.body)
+    console.log("---")
+    next()
 }
 
 // Mongoose definitions
@@ -63,55 +63,55 @@ function requestLogger(request, response, next) {
 // ]
 
 app.get("/", (request, response) => {
-	response.send("<h1>Hello World!</h1>")
+    response.send("<h1>Hello World!</h1>")
 })
 
 app.get("/api/notes", (request, response) => {
-	Note.find({}).then(notes => {
-		response.json(notes)
-	})
+    Note.find({}).then(notes => {
+        response.json(notes)
+    })
 })
 
 app.get("/api/notes/:id", (request, response, next) => {
-	const id = request.params.id // can use Number() but can't guarantee id can evaluate to a number and might result in NaN
-	// const note = notes.find(note => {
-	//     console.log(note.id, typeof note.id, id, typeof id, note.id === id)
-	//     return note.id === id
-	// })
-	// const note = notes.find(note => note.id.toString() === id)
-	// console.log(note)
+    const id = request.params.id // can use Number() but can't guarantee id can evaluate to a number and might result in NaN
+    // const note = notes.find(note => {
+    //     console.log(note.id, typeof note.id, id, typeof id, note.id === id)
+    //     return note.id === id
+    // })
+    // const note = notes.find(note => note.id.toString() === id)
+    // console.log(note)
 
-	// if (note) {
-	//     response.json(note)
-	// }
-	// else {
-	//     response.statusMessage = "id not found in the notes collection"
-	//     response.status(404).end()
-	// }
-	Note.findById(id).then(note => {
-		if (note) {
-			response.json(note)
-		}
-		else {
-			response.status(404).end()
-		}
-	})
-	// .catch(error => {
-	//     console.log(error)
-	//     response.status(400).send({ error: "malformatted id"})
-	//     // fits description: "The request could not be understood by the server due to malformed syntax. The client SHOULD NOT repeat the request without modifications."
-	// })
-		.catch(error => next(error))
+    // if (note) {
+    //     response.json(note)
+    // }
+    // else {
+    //     response.statusMessage = "id not found in the notes collection"
+    //     response.status(404).end()
+    // }
+    Note.findById(id).then(note => {
+        if (note) {
+            response.json(note)
+        }
+        else {
+            response.status(404).end()
+        }
+    })
+    // .catch(error => {
+    //     console.log(error)
+    //     response.status(400).send({ error: "malformatted id"})
+    //     // fits description: "The request could not be understood by the server due to malformed syntax. The client SHOULD NOT repeat the request without modifications."
+    // })
+        .catch(error => next(error))
 })
 
 app.delete("/api/notes/:id", (request, response, next) => {
-	const id = request.params.id
-	// notes = notes.filter(note => note.id.toString() !== id)
-	Note.findByIdAndRemove(id)
-		.then(() => {
-			response.status(204).end()
-		})
-		.catch(error => next(error))
+    const id = request.params.id
+    // notes = notes.filter(note => note.id.toString() !== id)
+    Note.findByIdAndRemove(id)
+        .then(() => {
+            response.status(204).end()
+        })
+        .catch(error => next(error))
 })
 
 // app.post("/api/notes", (request, response) => {
@@ -138,72 +138,72 @@ app.delete("/api/notes/:id", (request, response, next) => {
 // }
 
 app.post("/api/notes", (request, response, next) => {
-	const body = request.body
-	if (body.content === undefined) {
-		return response.status(404).json({ error: "content missing" })
-	}
-	// if (!body.content) {
-	//     // response.status(400).end()
-	//     return response.status(400).json({
-	//         error: "content missing"
-	//     })
-	// }
+    const body = request.body
+    if (body.content === undefined) {
+        return response.status(404).json({ error: "content missing" })
+    }
+    // if (!body.content) {
+    //     // response.status(400).end()
+    //     return response.status(400).json({
+    //         error: "content missing"
+    //     })
+    // }
 
-	const note = new Note({
-		content: body.content,
-		important: body.important || false,
-		// id: generateId(),
-	})
-	// notes = notes.concat(note)
+    const note = new Note({
+        content: body.content,
+        important: body.important || false,
+        // id: generateId(),
+    })
+    // notes = notes.concat(note)
 
-	note.save().then(savedNote => {
-		response.json(savedNote)
-	}).catch(error => {
-		console.log(error.name)
-		// response.status(404).json({ error: error.errors.content.kind})
-		next(error)
-	})
+    note.save().then(savedNote => {
+        response.json(savedNote)
+    }).catch(error => {
+        console.log(error.name)
+        // response.status(404).json({ error: error.errors.content.kind})
+        next(error)
+    })
 })
 
 app.put("/api/notes/:id", (request, response, next) => {
-	// const body = request.body
-	const { content, important } = request.body
+    // const body = request.body
+    const { content, important } = request.body
 
-	// const note = {
-	// 	content: body.content,
-	// 	important: body.important || false,
-	// }
+    // const note = {
+    // 	content: body.content,
+    // 	important: body.important || false,
+    // }
 
-	Note.findByIdAndUpdate(
-		request.params.id,
-		{ content, important },
-		{ new: true, runValidators: true, context: "query" })
-		.then(updatedNote => {
-			response.json(updatedNote)
-		}) // without the { new: true } argument, updatedNote will be the original document/note instead of the modified.
-		.catch(error => next(error))
+    Note.findByIdAndUpdate(
+        request.params.id,
+        { content, important },
+        { new: true, runValidators: true, context: "query" })
+        .then(updatedNote => {
+            response.json(updatedNote)
+        }) // without the { new: true } argument, updatedNote will be the original document/note instead of the modified.
+        .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
-	response.status(404).send({ error: "unknown endpoint" })
+    response.status(404).send({ error: "unknown endpoint" })
 }
 
 app.use(unknownEndpoint)
 
 const errorHandler = (error, request, response, next) => {
-	// console.log(error)
-	// console.log("---")
-	// console.log(error.name)
-	// console.log("---")
-	console.log(error.message)
+    // console.log(error)
+    // console.log("---")
+    // console.log(error.name)
+    // console.log("---")
+    console.log(error.message)
 
-	if (error.name === "CastError") {
-		return response.status(400).send({ error: "malformatted id" })
-	}
-	else if (error.name === "ValidationError") {
-		return response.status(400).json({ error: error.message })
-	}
-	next(error) // Express has a default error handler
+    if (error.name === "CastError") {
+        return response.status(400).send({ error: "malformatted id" })
+    }
+    else if (error.name === "ValidationError") {
+        return response.status(400).json({ error: error.message })
+    }
+    next(error) // Express has a default error handler
 }
 
 // this has to be the last loaded middleware
@@ -211,5 +211,5 @@ app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-	console.log(`Server runing on port ${PORT}`)
+    console.log(`Server runing on port ${PORT}`)
 })
