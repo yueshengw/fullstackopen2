@@ -9,11 +9,37 @@ mongoose.set("bufferTimeoutMS", 30000)
 
 beforeEach(async () => {
     await Note.deleteMany({})
-    await Note.insertMany(helper.initialNotes)
-})
 
+    await Note.insertMany(helper.initialNotes)
+    // // specific execution order
+    // for (let note of helper.initialNotes) {
+    //     let noteObject = new Note(note)
+    //     await noteObject.save()
+    // }
+
+    // // execute in parallel
+    // const noteObjects = helper.initialNotes
+    //     .map(note => new Note(note))
+    // const promiseArray = noteObjects.map(note => note.save())
+    // await Promise.all(promiseArray)
+
+    // console.log("cleared")
+    // helper.initialNotes.forEach(async (note) => {
+    //     let noteObject = new Note(note)
+    //     await noteObject.save
+    //     console.log("saved")
+    // })
+    // console.log("done")
+
+    // let noteObject = new Note(helper.initialNotes[0])
+    // await noteObject.save()
+
+    // noteObject = new Note(helper.initialNotes[1])
+    // await noteObject.save()
+})
 describe("when there is initially some notes saved", () => {
     test("notes are returned as json", async () => {
+        // console.log("entered test")
         await api
             .get("/api/notes")
             .expect(200)
@@ -38,7 +64,7 @@ describe("when there is initially some notes saved", () => {
 })
 
 describe("viewing a specific note", () => {
-    test("succeeds with a valid id", async () => {
+    test("succeeds with a valid id", async () => { // "a specific note can be viewed"
         const notesAtStart = await helper.notesInDb()
 
         const noteToView = notesAtStart[0]
@@ -60,16 +86,16 @@ describe("viewing a specific note", () => {
     })
 
     test("fails with status code 400 if id is invalid", async () => {
-        const invalidId = "1"
+        const validNonexistingId = "1"
 
         await api
-            .get(`/api/notes/${invalidId}`)
+            .get(`/api/notes/${validNonexistingId}`)
             .expect(404)
     })
 })
 
 describe("addition of a new note", () => {
-    test("succeeds with valid data", async () => {
+    test("succeeds with valid data", async () => { // "a valid note can be added"
         const newNote = {
             content: "async/await simplifies making async calls",
             important: true
@@ -84,13 +110,13 @@ describe("addition of a new note", () => {
         const notesAtEnd = await helper.notesInDb()
         expect(notesAtEnd).toHaveLength(helper.initialNotes.length + 1)
 
-        const contents = notesAtEnd.map(note => note.content)
+        const contents = notesAtEnd.map(r => r.content)
         expect(contents).toContain(
             "async/await simplifies making async calls"
         )
     })
 
-    test("fails with status code 400 if data invalid", async () => {
+    test("fails with status code 400 if data invalid", async () => { // "note without content is not added"
         const newNote = {
             important: true
         }
@@ -100,14 +126,14 @@ describe("addition of a new note", () => {
             .send(newNote)
             .expect(400)
 
-        const notesAtEnd = await helper.notesInDb()
+        const notesAtEnd = await api.get("/api/notes")
 
-        expect(notesAtEnd).toHaveLength(helper.initialNotes.length)
+        expect(notesAtEnd.body).toHaveLength(helper.initialNotes.length)
     })
 })
 
 describe("deletion of a note", () => {
-    test("succeeds with status code 204 if id is valid", async () => {
+    test("succeeds with status code 204 if id is valid", async () => { // "a note can be deleted"
         const notesAtStart = await helper.notesInDb()
         const noteToDelete = notesAtStart[0]
 
